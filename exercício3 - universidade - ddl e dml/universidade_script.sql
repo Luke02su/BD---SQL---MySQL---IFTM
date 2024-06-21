@@ -116,7 +116,7 @@ WHERE data_nascimento > '1990-01-01';
 SELECT nome
 FROM curso
 WHERE carga_horaria = (
-	SELECT MAX(carga_horaria) 
+    SELECT MAX(carga_horaria) 
     FROM curso
 );
 
@@ -134,7 +134,7 @@ WHERE carga_horaria < 20;
 
 SELECT id_aluno
 FROM matricula m
-LEFT JOIN matricula_disciplina md 
+INNER JOIN matricula_disciplina md 
 ON m.id_matricula = md.id_matricula
 WHERE nota = (
 	SELECT MIN(nota)
@@ -145,7 +145,7 @@ WHERE nota = (
 
 SELECT m.id_aluno
 FROM matricula m
-LEFT JOIN curso c 
+INNER JOIN curso c 
 ON m.id_curso = c.id_curso
 WHERE carga_horaria > 2400;
 
@@ -153,9 +153,9 @@ WHERE carga_horaria > 2400;
 
 SELECT a.nome, c.nome, c.carga_horaria
 FROM aluno a
-LEFT JOIN matricula m
+INNER JOIN matricula m
 ON a.id_aluno = m.id_aluno
-LEFT JOIN curso c
+INNER JOIN curso c
 ON c.id_curso = m.id_curso;
 
 -- 8. Atualizar a carga horária do curso de Administração para 300 horas:
