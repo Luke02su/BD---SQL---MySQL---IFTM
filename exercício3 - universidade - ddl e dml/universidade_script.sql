@@ -107,9 +107,13 @@ FROM aluno;
 
 -- 2. Liste o nome, o CPF e o sexo de todos os alunos nascidos após 1990.
 
-SELECT nome, CPF, sexo
+SELECT nome, CPF, sexo, data_nascimento
 FROM aluno
 WHERE data_nascimento > '1990-01-01';
+/* OU
+SELECT nome, CPF, sexo, data_nascimento
+FROM aluno
+WHERE YEAR(data_nascimento) > 1990;*/
 
 -- 3. Liste o nome do curso com a maior carga horária.
 
@@ -119,6 +123,11 @@ WHERE carga_horaria = (
     SELECT MAX(carga_horaria) 
     FROM curso
 );
+/* OU
+SELECT nome, 
+FROM curso
+ORDER BY nome DESC
+LIMIT 1;*/
 
 -- 4. Excluir todas as disciplinas com a carga horária inferior a 20 horas:
 
@@ -132,14 +141,24 @@ WHERE carga_horaria < 20;
 
 -- 5. Liste o ID do aluno com a menor nota na disciplina de Programação Orientada a Objetos.
 
-SELECT id_aluno
+SELECT DISTINCT m.id_aluno, d.nome
 FROM matricula m
 INNER JOIN matricula_disciplina md 
 ON m.id_matricula = md.id_matricula
-WHERE nota = (
+INNER JOIN disciplina d
+ON d.id_disciplina = md.id_disciplina
+WHERE d.nome = 'Programação Orientada a Objetos'
+ORDER BY md.nota
+LIMIT 1;
+/* OU
+SELECT DISTINCT id_aluno
+FROM matricula m, matricula_disciplina md 
+WHERE m.id_matricula = md.id_matricula
+AND nota = (
 	SELECT MIN(nota)
     FROM matricula_disciplina
-);
+    WHERE id_disciplina = 2
+);*/
 
 -- 6. Liste os IDS de todos os alunos que estão matriculados em um curso com carga horária superior a 2400 horas:
 
@@ -148,6 +167,12 @@ FROM matricula m
 INNER JOIN curso c 
 ON m.id_curso = c.id_curso
 WHERE carga_horaria > 2400;
+/* OU
+SELECT m.id_aluno
+FROM matricula m, curso c 
+WHERE m.id_curso = c.id_curso
+AND carga_horaria > 2400;
+*/
 
 -- 7. Liste o nome, o nome do curso e a carga horária do curso de cada aluno.
 
@@ -156,7 +181,14 @@ FROM aluno a
 INNER JOIN matricula m
 ON a.id_aluno = m.id_aluno
 INNER JOIN curso c
-ON c.id_curso = m.id_curso;
+ON c.id_curso = m.id_curso
+ORDER BY c.carga_horaria DESC;
+/* OU
+SELECT a.nome, c.nome, c.carga_horaria
+FROM aluno a, matricula m, curso c
+WHERE a.id_aluno = m.id_aluno
+AND c.id_curso = m.id_curso;
+*/
 
 -- 8. Atualizar a carga horária do curso de Administração para 300 horas:
 
