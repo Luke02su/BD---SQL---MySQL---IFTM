@@ -141,7 +141,30 @@ WHERE carga_horaria < 20;
 
 -- 5. Liste o ID do aluno com a menor nota na disciplina de Programação Orientada a Objetos.
 
-SELECT DISTINCT m.id_aluno, d.nome
+SELECT m.id_aluno
+FROM matricula m
+WHERE m.id_matricula IN (
+	SELECT md.id_matricula
+    FROM matricula_disciplina md
+    INNER JOIN disciplina d
+	ON d.id_disciplina = md.id_disciplina
+    WHERE d.nome = 'Programação Orientada a Objetos'
+    AND md.nota = (SELECT MIN(md.nota) FROM matricula_disciplina md WHERE md.id_disciplina = d.id_disciplina)
+);
+/* OU 
+SELECT m.id_aluno
+FROM matricula m
+INNER JOIN matricula_disciplina md 
+ON m.id_matricula = md.id_matricula
+AND md.nota = (
+	SELECT MIN(md.nota)
+    FROM matricula_disciplina md
+    INNER JOIN disciplina d
+	ON d.id_disciplina = md.id_disciplina
+    WHERE d.nome = 'Programação Orientada a Objetos'
+);*/
+/*OU
+SELECT m.id_aluno
 FROM matricula m
 INNER JOIN matricula_disciplina md 
 ON m.id_matricula = md.id_matricula
@@ -150,16 +173,7 @@ ON d.id_disciplina = md.id_disciplina
 WHERE d.nome = 'Programação Orientada a Objetos'
 ORDER BY md.nota
 LIMIT 1;
-/* OU
-SELECT DISTINCT id_aluno
-FROM matricula m, matricula_disciplina md 
-WHERE m.id_matricula = md.id_matricula
-AND nota = (
-	SELECT MIN(nota)
-    FROM matricula_disciplina
-    WHERE id_disciplina = 2
-);*/
-
+*/
 -- 6. Liste os IDS de todos os alunos que estão matriculados em um curso com carga horária superior a 2400 horas:
 
 SELECT m.id_aluno
@@ -200,3 +214,6 @@ WHERE nome = 'Administração';
 -- UPDATE curso 
 -- SET carga_horaria = 300
 -- WHERE nome = 'Administração' AND id_curso != 0;
+
+
+-- Para determinadas questões, é possível haver outras maneiras de serem realizadas.
