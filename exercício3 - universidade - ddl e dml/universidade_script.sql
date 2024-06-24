@@ -131,6 +131,8 @@ LIMIT 1;*/
 
 -- 4. Excluir todas as disciplinas com a carga horária inferior a 20 horas:
 
+INSERT INTO disciplina VALUES (null, "teste", 10); -- inserindo carga horária inferior a 20 (default ou null para serem reenchidas pelo AUTO_INCREMENT)
+SELECT * FROM disciplina;
 SET SQL_SAFE_UPDATES = 0;
 DELETE FROM disciplina 
 WHERE carga_horaria < 20;
