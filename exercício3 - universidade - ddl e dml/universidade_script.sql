@@ -178,15 +178,17 @@ LIMIT 1;
 */
 -- 6. Liste os IDS de todos os alunos que estão matriculados em um curso com carga horária superior a 2400 horas:
 
-SELECT m.id_aluno
-FROM matricula m
+SELECT a.id_aluno
+FROM aluno a
+INNER JOIN matricula m
+ON a.id_aluno = m.id_aluno 
 INNER JOIN curso c 
 ON m.id_curso = c.id_curso
 WHERE carga_horaria > 2400;
 /* OU
-SELECT m.id_aluno
-FROM matricula m, curso c 
-WHERE m.id_curso = c.id_curso
+SELECT a.id_aluno
+FROM aluno amatricula m, curso c 
+WHERE a.id_aluno = m.id_aluno AND m.id_curso = c.id_curso
 AND carga_horaria > 2400;
 */
 
