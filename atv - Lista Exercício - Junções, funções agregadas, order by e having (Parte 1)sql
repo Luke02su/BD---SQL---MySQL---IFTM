@@ -202,7 +202,6 @@ WHERE ID_Superv IS NULL;
 -- 8. Liste o nome dos empregados, o nome dos seus departamentos e o nome dos projetos em que eles trabalham, ordenados pelo nome do departamento e pelo nome do projeto.
 
 SELECT * FROM projeto;
-
 SELECT f.NomeFunc, d.NomeDepto, p.NomeProj
 FROM funcionario f
 INNER JOIN departamento d
@@ -226,6 +225,7 @@ WHERE d.NomeDepto = 'Pesquisa';
 
 -- 11. Liste o nome dos funcionários que não tem dependentes.
 
+SELECT * FROM dependente;
 SELECT f.NomeFunc
 FROM funcionario f
 LEFT JOIN dependente d
@@ -234,4 +234,70 @@ WHERE d.ID_Func IS NULL;
 
 -- 12. Para cada projeto localizado no 'Luxemburgo', liste o numero do projeto, o número do departamento que o controla e o nome, endereço e data de aniversário do gerente do departamento.
 
-SELECT * FROm projeto;
+SELECT p.NomeProj, p.ID_Proj, d.ID_Depto, d.ID_Gerente, f.NomeFunc, f.Endereco, f.DataNasc
+FROM projeto p
+INNER JOIN departamento d
+ON p.ID_Depto = d.ID_Depto
+INNER JOIN funcionario f
+ON d.ID_Gerente = f.ID_Func;
+
+-- 13. Liste o nome e localização dos projetos que não tem funcionários trabalhando neles.
+
+SELECT * FROM trabalha;
+SELECT p.NomeProj, p.Localizacao
+FROM projeto p
+LEFT JOIN trabalha t
+ON p.ID_Proj = t.ID_Proj
+LEFT JOIN funcionario f
+ON t.ID_Func = f.ID_Func
+WHERE t.ID_Func IS NULL;
+
+-- 14. Liste o nome dos funcionários que não tem dependentes e não estejam trabalhando em nenhum projeto.
+
+SELECT f.NomeFunc
+FROM funcionario f
+LEFT JOIN dependente d
+ON f.ID_Func = d.ID_Func
+LEFT JOIN trabalha t
+ON f.ID_Func = t.ID_Func
+LEFT JOIN projeto p
+ON t.ID_Proj = p.ID_Proj
+WHERE d.ID_Func IS NULL AND t.ID_Func IS NULL;
+
+-- 15. Liste para cada empregado, o seu nome e o nome de seu supervisor.
+
+SELECT f.NomeFunc, ff.NomeFunc NomeSuperv
+FROM funcionario f
+INNER JOIN funcionario ff -- duplicando tabela (autorrelacionamrnto)
+ON f.ID_Superv = ff.ID_Func;
+
+-- 16. Liste o nome de cada projeto com o número de empregados que trabalham no projeto.
+
+SELECT p.NomeProj, COUNT(f.ID_Func) NumFunc
+FROM projeto p
+INNER JOIN trabalha t
+ON p.ID_Proj = t.ID_Proj
+INNER JOIN funcionario f
+ON t.ID_Func = f.ID_Func
+GROUP BY p.ID_Proj;
+
+-- 17. Para cada projeto que possua mais de 2 empregados na equipe, liste o nome do projeto e a quantidade de empregados que trabalham no mesmo.
+
+SELECT p.NomeProj, COUNT(f.ID_Func) NumFunc
+FROM projeto p
+INNER JOIN trabalha t
+ON p.ID_Proj = t.ID_Proj
+INNER JOIN funcionario f
+ON t.ID_Func = f.ID_Func
+GROUP BY p.ID_Proj
+HAVING NumFunc > 2;
+
+-- 18. Para cada departamento que possua mais do que 2 empregados, liste o nome do departamento e o nome dos empregados que ganham mais do que 800,00.
+
+SELECT d.NomeDepto, f.NomeFunc
+FROM funcionario f
+INNER JOIN departamento d
+ON f.ID_Depto = d.ID_Depto
+WHERE f.Salario > 800.00
+AND (SELECT COUNT(ID_Func) NumFunc FROM funcionario) > 2
+ORDER BY d.ID_Depto, f.NomeFunc;
