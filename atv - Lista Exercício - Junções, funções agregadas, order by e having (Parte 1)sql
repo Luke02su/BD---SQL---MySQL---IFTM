@@ -299,5 +299,10 @@ FROM funcionario f
 INNER JOIN departamento d
 ON f.ID_Depto = d.ID_Depto
 WHERE f.Salario > 800.00
-AND (SELECT COUNT(ID_Func) NumFunc FROM funcionario) > 2
+AND d.ID_Depto IN (SELECT ID_Depto -- a subconsulta EXISTS aqui não funcionaria
+				   FROM funcionario
+				   GROUP BY ID_Depto
+				   HAVING COUNT(ID_Func) > 2)
 ORDER BY d.ID_Depto, f.NomeFunc;
+
+-- Ordena-se por PK, quando não usa o ORDER BY.
