@@ -158,40 +158,55 @@ ADD CONSTRAINT fk_trab_proj FOREIGN KEY (ID_Proj) REFERENCES Projeto (ID_Proj) O
 -- 1. Insira na tabela de projeto o projeto “Novo Projeto”, localizado no “Buritis”, associando ao departamento 1.
 
 SELECT * FROM projeto;
-INSERT INTO projeto VALUES (40, 'Novo Projeto', 'Buritis', 1);
+INSERT INTO projeto VALUES (40, 'Novo Projeto', 'Buritis', 1); -- não é AUTO_INCREMENT (ideal usá-lo)
+-- INSERT INTO projeto (ID_Proj, NomeProj, Localizacao) VALUES (40, 'Novo Projeto', 'Buritis', 1);
 
 -- 2. Insira na tabela de funcionários o funcionário 'Edgar Marinho', que mora na rua 'R. Alameda,111', nascido em '13/11/1959', ganha R$ 2000,00, não tem supervisor e está a associado ao departamento 2;
 
 SELECT * FROM funcionario;
 INSERT funcionario VALUES (9, 'Edgar Marinho', 'R. Alameda, 111', '1959-11-13', 'M', 2000.00, null, 2);
+INSERT funcionario (ID_Func, NomeFunc, Endereco, DataNasc, Sexo, Salario, ID_Superv, ID_Depto) VALUES (9, 'Edgar Marinho', 'R. Alameda, 111', '1959-11-13', 'M', 2000.00, null, 2);
 
 -- 3. Atualize o salário do funcionário ‘Joao Silva’ para R$ 1000,00.
 
 SET SQL_SAFE_UPDATES = 0;
 UPDATE funcionario SET Salario = 1000.00 WHERE NomeFunc = 'Joao Silva';
+SELECT * FROM funcionario WHERE NomeFunc = 'Joao Silva';
 
 -- 4. Liste o nome dos empregados do departamento 3 e também do 2 que possuem salário entre R$800,00 e R$1.200,00.
 
-SELECT NomeFunc
+SELECT NomeFunc, Salario
 FROM funcionario
 WHERE ID_Depto IN (2, 3)
 AND Salario BETWEEN 800.00 AND 1200.00;
+/*SELECT NomeFunc, Salario, ID_Depto
+FROM funcionario
+WHERE (ID_Depto = 2 OR ID_Depto = 3) -- ideal usar parênteses para evitar erro
+AND Salario >= 800.00 AND Salario <= 1200.00;*/
 
 -- 5. Liste o nome e o endereço de todos os empregados que pertencem ao departamento 'Pesquisa'.
 
 SELECT * FROM departamento;
-
 SELECT f.NomeFunc, f.Endereco
 FROM funcionario f
 INNER JOIN departamento d
 ON f.ID_Depto = d.ID_Depto
 WHERE d.NomeDepto = 'Pesquisa';
+/*SELECT f.NomeFunc, f.Endereco
+FROM funcionario f
+WHERE f.ID_Depto = ( -- SE HOUVESSE MAIS VALORES DENTRO DE DEPARTAMENTO IDEAL SERIA USAR IN AO INVÉS DE =
+	SELECT d.ID_Depto
+    FROM departamento d
+	WHERE d.NomeDepto = 'Pesquisa');*/
 
 -- 6. Liste o nome e a data de nascimento do empregado 'Joao Silva'. Mostre no formato brasileiro com dois dígitos no ano. (pesquise a função date_format)
 
-SELECT NomeFunc, DATE_FORMAT(DataNasc, '%D, %M, %Y') DataFormatoBrasileiro
+SELECT NomeFunc, DATE_FORMAT(DataNasc, '%d/%m/%y') DataFormatoBrasileiro -- maiúscula é por extenso (exceto Y, com todos dígitos, y apenas os dois últimos) e minúscula em número
 FROM funcionario
 WHERE NomeFunc = 'Joao Silva';
+/*SELECT NomeFunc, DATE_FORMAT(DataNasc, '%D, %M, %y') DataFormatoBrasileiro
+FROM funcionario
+WHERE NomeFunc = 'Joao Silva';*/
 
 -- 7. Liste o nome dos empregados que não possuem supervisores.
 
@@ -209,6 +224,15 @@ ON f.ID_Depto = d.ID_Depto
 INNER JOIN projeto p
 ON d.ID_Depto = p.ID_Depto
 ORDER BY d.NomeDepto, f.NomeFunc;
+
+SELECT f.NomeFunc, d.NomeDepto, p.NomeProj
+FROM funcionario f
+WHERE f.ID_Depto IN (
+	SELECT d.ID_Depto
+	FROM departamento d) AND
+ON d.ID_Depto = p.ID_Depto
+ORDER BY d.NomeDepto, f.NomeFunc;
+
 
 -- 9. Liste a soma, a média, o maior e o menor salário de todos os empregados.
 
