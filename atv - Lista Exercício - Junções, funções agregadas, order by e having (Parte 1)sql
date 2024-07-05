@@ -214,52 +214,83 @@ WHERE NomeFunc = 'Joao Silva';*/
 SELECT NomeFunc
 FROM funcionario
 WHERE ID_Superv IS NULL;
+/*SELECT f.NomeFunc -- desnecessário JOIN aqui
+FROM funcionario f
+LEFT JOIN departamento d
+ON f.ID_Superv = d.ID_Gerente
+WHERE f.ID_Superv IS NULL;*/
+
+describe funcionario;
 
 -- 8. Liste o nome dos empregados, o nome dos seus departamentos e o nome dos projetos em que eles trabalham, ordenados pelo nome do departamento e pelo nome do projeto.
 
 SELECT * FROM projeto;
+SELECT * FROM trabalha;
 SELECT f.NomeFunc, d.NomeDepto, p.NomeProj
 FROM funcionario f
 INNER JOIN departamento d
 ON f.ID_Depto = d.ID_Depto
+INNER JOIN trabalha t
+ON f.ID_Func = t.ID_Func
 INNER JOIN projeto p
-ON d.ID_Depto = p.ID_Depto
-ORDER BY d.NomeDepto, f.NomeFunc;
+ON t.ID_Proj = p.ID_Proj
+ORDER BY d.NomeDepto, p.NomeProj;
 /*SELECT f.NomeFunc, d.NomeDepto, p.NomeProj
-FROM funcionario f, departamento d, projeto p
-WHERE f.ID_Depto = d.ID_Depto AND d.ID_Depto = p.ID_Depto
+FROM funcionario f, departamento d, trabalha t, projeto p
+WHERE f.ID_Depto = d.ID_Depto 
+AND f.ID_Func = t.ID_Func 
+AND t.ID_Proj = p.ID_Proj
 ORDER BY d.NomeDepto, f.NomeFunc;*/
 
 -- 9. Liste a soma, a média, o maior e o menor salário de todos os empregados.
 
-SELECT SUM(Salario) SomaSalarios, AVG(Salario) MediaSalario, MAX(Salario) MaiorSalario, MIN(Salario) MenorSalario
+SELECT ROUND(SUM(Salario), 2) SomaSalarios, ROUND(AVG(Salario), 2) MediaSalario, MAX(Salario) MaiorSalario, MIN(Salario) MenorSalario
 FROM funcionario;
 
 -- 10. Liste a soma, a média, o maior e o menor salário dos empregados do departamento 'Pesquisa'.
 
-SELECT SUM(Salario) SomaSalarios, AVG(Salario) MediaSalario, MAX(Salario) MaiorSalario, MIN(Salario) MenorSalario
+SELECT SUM(Salario) SomaSalarios, ROUND(AVG(Salario), 2) MediaSalario, MAX(Salario) MaiorSalario, MIN(Salario) MenorSalario
 FROM funcionario f
 INNER JOIN departamento d
 ON f.ID_Depto = d.ID_Depto
 WHERE d.NomeDepto = 'Pesquisa';
 
+SELECT SUM(Salario) SomaSalarios, AVG(Salario) MediaSalario, MAX(Salario) MaiorSalario, MIN(Salario) MenorSalario
+FROM funcionario f
+WHERE f.ID_Depto = (
+	SELECT d.ID_Depto
+	FROM departamento d
+	WHERE d.NomeDepto = 'Pesquisa');
+
 -- 11. Liste o nome dos funcionários que não tem dependentes.
 
 SELECT * FROM dependente;
+
 SELECT f.NomeFunc
 FROM funcionario f
 LEFT JOIN dependente d
 ON f.ID_Func = d.ID_Func
 WHERE d.ID_Func IS NULL;
+/*SELECT f.NomeFunc
+FROM dependente d
+RIGHT JOIN funcionario f
+ON d.ID_Func = f.ID_Func
+WHERE d.ID_Func IS NULL;*/
 
 -- 12. Para cada projeto localizado no 'Luxemburgo', liste o numero do projeto, o número do departamento que o controla e o nome, endereço e data de aniversário do gerente do departamento.
 
-SELECT p.NomeProj, p.ID_Proj, d.ID_Depto, d.ID_Gerente, f.NomeFunc, f.Endereco, f.DataNasc
+SELECT p.ID_Proj, d.ID_Depto, d.NomeDepto, f.Endereco, DATE_FORMAT(DataNasc, '%d/%m') DataAniver
 FROM projeto p
 INNER JOIN departamento d
 ON p.ID_Depto = d.ID_Depto
 INNER JOIN funcionario f
-ON d.ID_Gerente = f.ID_Func;
+ON d.ID_Gerente = f.ID_Func
+WHERE p.Localizacao = 'Luxemburgo';
+/*SELECT p.ID_Proj, d.ID_Depto, d.NomeDepto, f.Endereco, DATE_FORMAT(DataNasc, '%d/%m') DataAniver
+FROM projeto p, departamento d, funcionario f
+WHERE p.ID_Depto = d.ID_Depto
+AND d.ID_Gerente = f.ID_Func
+AND p.Localizacao = 'Luxemburgo';*/
 
 -- 13. Liste o nome e localização dos projetos que não tem funcionários trabalhando neles.
 
@@ -272,7 +303,25 @@ LEFT JOIN funcionario f
 ON t.ID_Func = f.ID_Func
 WHERE t.ID_Func IS NULL;
 
+SELECT p.NomeProj, p.Localizacao
+FROM funcionario f
+RIGHT JOIN trabalha t
+ON f.ID_Func = t.ID_Func
+RIGHT JOIN projeto p
+ON t.ID_Proj = p.ID_Proj
+WHERE t.ID_Func IS NULL;
+
 -- 14. Liste o nome dos funcionários que não tem dependentes e não estejam trabalhando em nenhum projeto.
+
+SELECT f.NomeFunc
+FROM funcionario f
+LEFT JOIN dependente d
+ON f.ID_Func = d.ID_Func
+LEFT JOIN trabalha t
+ON f.ID_Func = t.ID_Func
+LEFT JOIN projeto p
+ON t.ID_Proj = p.ID_Proj
+WHERE d.ID_Func IS NULL AND t.ID_Func IS NULL;
 
 SELECT f.NomeFunc
 FROM funcionario f
@@ -288,8 +337,11 @@ WHERE d.ID_Func IS NULL AND t.ID_Func IS NULL;
 
 SELECT f.NomeFunc, ff.NomeFunc NomeSuperv
 FROM funcionario f
-INNER JOIN funcionario ff -- duplicando tabela (autorrelacionamrnto)
+INNER JOIN funcionario ff -- duplicando tabela (autorrelacionamento)
 ON f.ID_Superv = ff.ID_Func;
+/*SELECT f.NomeFunc, ff.NomeFunc NomeSuperv
+FROM funcionario f, funcionario ff
+WHERE f.ID_Superv = ff.ID_Func;*/
 
 -- 16. Liste o nome de cada projeto com o número de empregados que trabalham no projeto.
 
@@ -300,6 +352,11 @@ ON p.ID_Proj = t.ID_Proj
 INNER JOIN funcionario f
 ON t.ID_Func = f.ID_Func
 GROUP BY p.ID_Proj;
+/*SELECT p.NomeProj, COUNT(f.ID_Func) NumFunc
+FROM projeto p, trabalha t, funcionario f
+WHERE p.ID_Proj = t.ID_Proj
+AND t.ID_Func = f.ID_Func
+GROUP BY p.ID_Proj;*/
 
 -- 17. Para cada projeto que possua mais de 2 empregados na equipe, liste o nome do projeto e a quantidade de empregados que trabalham no mesmo.
 
@@ -311,6 +368,12 @@ INNER JOIN funcionario f
 ON t.ID_Func = f.ID_Func
 GROUP BY p.ID_Proj
 HAVING NumFunc > 2;
+/*SELECT p.NomeProj, COUNT(f.ID_Func) NumFunc
+FROM projeto p, trabalha t, funcionario f
+WHERE p.ID_Proj = t.ID_Proj
+AND t.ID_Func = f.ID_Func
+GROUP BY p.ID_Proj
+HAVING NumFunc > 2;*/
 
 -- 18. Para cada departamento que possua mais do que 2 empregados, liste o nome do departamento e o nome dos empregados que ganham mais do que 800,00.
 
@@ -320,9 +383,18 @@ INNER JOIN departamento d
 ON f.ID_Depto = d.ID_Depto
 WHERE f.Salario > 800.00
 AND d.ID_Depto IN (SELECT ID_Depto -- a subconsulta EXISTS aqui não funcionaria
-				   FROM funcionario
-				   GROUP BY ID_Depto
-				   HAVING COUNT(ID_Func) > 2)
+	FROM funcionario
+	GROUP BY ID_Depto
+	HAVING COUNT(ID_Func) > 2)
 ORDER BY d.ID_Depto, f.NomeFunc;
+/*SELECT d.NomeDepto, f.NomeFunc
+FROM funcionario f, departamento d
+WHERE f.ID_Depto = d.ID_Depto
+AND f.Salario > 800.00
+AND d.ID_Depto IN (SELECT ID_Depto 
+	FROM funcionario
+	GROUP BY ID_Depto
+	HAVING COUNT(ID_Func) > 2)
+ORDER BY d.ID_Depto, f.NomeFunc;*/
 
 -- Ordena-se por PK, quando não usa o ORDER BY.
