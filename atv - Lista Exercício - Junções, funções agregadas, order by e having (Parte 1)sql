@@ -383,7 +383,8 @@ FROM funcionario f
 INNER JOIN departamento d
 ON f.ID_Depto = d.ID_Depto
 WHERE f.Salario > 800.00
-AND d.ID_Depto IN (SELECT ID_Depto -- a subconsulta EXISTS aqui não funcionaria
+AND d.ID_Depto IN (
+	SELECT ID_Depto -- a subconsulta EXISTS aqui não funcionaria
 	FROM funcionario
 	GROUP BY ID_Depto
 	HAVING COUNT(ID_Func) > 2)
@@ -392,7 +393,8 @@ ORDER BY d.ID_Depto, f.NomeFunc;
 FROM funcionario f, departamento d
 WHERE f.ID_Depto = d.ID_Depto
 AND f.Salario > 800.00
-AND d.ID_Depto IN (SELECT ID_Depto 
+AND d.ID_Depto IN (
+	SELECT ID_Depto 
 	FROM funcionario
 	GROUP BY ID_Depto
 	HAVING COUNT(ID_Func) > 2)
