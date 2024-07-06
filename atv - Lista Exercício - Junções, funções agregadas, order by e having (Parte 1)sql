@@ -214,13 +214,6 @@ WHERE NomeFunc = 'Joao Silva';*/
 SELECT NomeFunc
 FROM funcionario
 WHERE ID_Superv IS NULL;
-/*SELECT f.NomeFunc -- desnecessário JOIN aqui
-FROM funcionario f
-LEFT JOIN departamento d
-ON f.ID_Superv = d.ID_Gerente
-WHERE f.ID_Superv IS NULL;*/
-
-describe funcionario;
 
 -- 8. Liste o nome dos empregados, o nome dos seus departamentos e o nome dos projetos em que eles trabalham, ordenados pelo nome do departamento e pelo nome do projeto.
 
@@ -302,14 +295,13 @@ ON p.ID_Proj = t.ID_Proj
 LEFT JOIN funcionario f
 ON t.ID_Func = f.ID_Func
 WHERE t.ID_Func IS NULL;
-
-SELECT p.NomeProj, p.Localizacao
+/*SELECT p.NomeProj, p.Localizacao
 FROM funcionario f
 RIGHT JOIN trabalha t
 ON f.ID_Func = t.ID_Func
 RIGHT JOIN projeto p
 ON t.ID_Proj = p.ID_Proj
-WHERE t.ID_Func IS NULL;
+WHERE t.ID_Func IS NULL;*/
 
 -- 14. Liste o nome dos funcionários que não tem dependentes e não estejam trabalhando em nenhum projeto.
 
@@ -324,14 +316,23 @@ ON t.ID_Proj = p.ID_Proj
 WHERE d.ID_Func IS NULL AND t.ID_Func IS NULL;
 
 SELECT f.NomeFunc
-FROM funcionario f
-LEFT JOIN dependente d
-ON f.ID_Func = d.ID_Func
-LEFT JOIN trabalha t
-ON f.ID_Func = t.ID_Func
-LEFT JOIN projeto p
+FROM projeto p
+RIGHT JOIN trabalha t
 ON t.ID_Proj = p.ID_Proj
+RIGHT JOIN funcionario f
+ON f.ID_Func = t.ID_Func
+RIGHT JOIN dependente d
+ON f.ID_Func = d.ID_Func
 WHERE d.ID_Func IS NULL AND t.ID_Func IS NULL;
+/*SELECT f.NomeFunc
+FROM projeto p
+RIGHT JOIN trabalha t
+ON p.ID_Proj = t.ID_Proj
+RIGHT JOIN funcionario f
+ON t.ID_Func = f.ID_Func
+LEFT JOIN dependente d
+ON d.ID_Func = f.ID_Func
+WHERE p.ID_Proj IS NULL AND d.ID_Func IS NULL;*/
 
 -- 15. Liste para cada empregado, o seu nome e o nome de seu supervisor.
 
