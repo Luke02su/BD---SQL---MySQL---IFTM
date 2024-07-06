@@ -313,16 +313,6 @@ ON f.ID_Func = t.ID_Func
 LEFT JOIN projeto p
 ON t.ID_Proj = p.ID_Proj
 WHERE d.ID_Func IS NULL AND t.ID_Func IS NULL;
-
-SELECT f.NomeFunc
-FROM projeto p
-RIGHT JOIN trabalha t
-ON t.ID_Proj = p.ID_Proj
-RIGHT JOIN funcionario f
-ON f.ID_Func = t.ID_Func
-RIGHT JOIN dependente d
-ON f.ID_Func = d.ID_Func
-WHERE d.ID_Func IS NULL AND t.ID_Func IS NULL;
 /*SELECT f.NomeFunc
 FROM projeto p
 RIGHT JOIN trabalha t
