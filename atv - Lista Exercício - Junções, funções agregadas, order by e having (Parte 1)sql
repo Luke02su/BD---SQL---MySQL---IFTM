@@ -258,7 +258,6 @@ WHERE f.ID_Depto = (
 -- 11. Liste o nome dos funcionários que não tem dependentes.
 
 SELECT * FROM dependente;
-
 SELECT f.NomeFunc
 FROM funcionario f
 LEFT JOIN dependente d
