@@ -270,14 +270,14 @@ WHERE d.ID_Func IS NULL;*/
 
 -- 12. Para cada projeto localizado no 'Luxemburgo', liste o numero do projeto, o número do departamento que o controla e o nome, endereço e data de aniversário do gerente do departamento.
 
-SELECT p.ID_Proj, d.ID_Depto, d.NomeDepto, f.Endereco, DATE_FORMAT(DataNasc, '%d/%m') DataAniver
+SELECT p.ID_Proj, d.ID_Depto, f.NomeFunc, f.Endereco, DATE_FORMAT(DataNasc, '%d/%m') DataAniver
 FROM projeto p
 INNER JOIN departamento d
 ON p.ID_Depto = d.ID_Depto
 INNER JOIN funcionario f
 ON d.ID_Gerente = f.ID_Func
 WHERE p.Localizacao = 'Luxemburgo';
-/*SELECT p.ID_Proj, d.ID_Depto, d.NomeDepto, f.Endereco, DATE_FORMAT(DataNasc, '%d/%m') DataAniver
+/*SELECT p.ID_Proj, d.ID_Depto, f.NomeFunc, f.Endereco, DATE_FORMAT(DataNasc, '%d/%m') DataAniver
 FROM projeto p, departamento d, funcionario f
 WHERE p.ID_Depto = d.ID_Depto
 AND d.ID_Gerente = f.ID_Func
