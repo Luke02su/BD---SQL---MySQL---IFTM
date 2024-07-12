@@ -1,4 +1,3 @@
-
 create database if not exists BDEmpresa;
 use BDEmpresa;
 
@@ -257,7 +256,7 @@ WHERE f.ID_Depto = (
 -- 11. Liste o nome dos funcionários que não tem dependentes.
 
 SELECT * FROM dependente;
-SELECT *
+SELECT f.NomeFunc
 FROM funcionario f
 LEFT JOIN dependente d
 ON f.ID_Func = d.ID_Func
@@ -372,6 +371,18 @@ AND d.ID_Depto IN (SELECT ID_Depto
 	FROM funcionario
 	GROUP BY ID_Depto
 	HAVING COUNT(ID_Func) > 2)
+ORDER BY d.ID_Depto, f.NomeFunc;*/
+/*SELECT d.NomeDepto, f.NomeFunc
+FROM departamento d
+INNER JOIN funcionario f
+ON d.ID_Depto = f.ID_Depto
+INNER JOIN (
+    SELECT ID_Depto
+	FROM funcionario
+	GROUP BY ID_Depto
+	HAVING COUNT(ID_Func) > 2
+) AS dd ON d.ID_Depto = dd.ID_Depto
+WHERE Salario > 800.00
 ORDER BY d.ID_Depto, f.NomeFunc;*/
 
 -- Ordena-se por PK, quando não usa o ORDER BY.
