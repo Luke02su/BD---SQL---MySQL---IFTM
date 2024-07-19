@@ -129,21 +129,22 @@ DELETE FROM cliente WHERE cpf = '150.975.886-06';
 SELECT * FROM cliente;
 SELECT * FROM telefone_cliente;
 
-/*3. Adicione ao modelo uma tabela de log (registros). Sempre que os dados de uma conta forem
+/*3. Adicione ao modelo uma tabclienteela de log (registros). Sempre que os dados de uma conta forem
 atualizados será gerado um registro nessa tabela, os dados antes e depois da atualização. Crie
 um campo timestamp para armazenar a operação.*/
 
 CREATE TABLE log_update_conta (
 	id_update INT AUTO_INCREMENT PRIMARY KEY,
-	num_conta VARCHAR(7) NOT NULL,
+	num_conta_anterior VARCHAR(7) NOT NULL,
+    num_conta_atual VARCHAR(7) NOT NULL,
     saldo_anterior FLOAT NOT NULL,
     saldo_atual FLOAT NOT NULL,
-    tipo_conta INT,
-    num_agencia INT NOT NULL,
+    tipo_conta_anterior INT,
+    tipo_conta_atual INT,
+    num_agencia_anterior INT NOT NULL,
+	num_agencia_atual INT NOT NULL,
     horario_update TIMESTAMP
 );
-
-drop table log_update_conta ;
 
 DELIMITER &&
 CREATE TRIGGER trg_update_conta AFTER UPDATE
@@ -151,14 +152,24 @@ ON conta
 FOR EACH ROW
 	BEGIN
 		INSERT INTO log_update_conta 
-        (num_conta, saldo_anterior, saldo_atual, tipo_conta, num_agencia, horario_update) 
+        (num_conta_anterior, num_conta_atual, saldo_anterior, saldo_atual, tipo_conta_anterior, tipo_conta_atual, num_agencia_anterior, num_agencia_atual, horario_update) 
         VALUES
-        (OLD.num_conta, OLD.saldo, NEW.saldo, OLD.tipo_conta, OLD.num_agencia, NOW());
+        (OLD.num_conta, NEW.num_conta, OLD.saldo, NEW.saldo, OLD.tipo_conta, NEW.tipo_conta, OLD.num_agencia, NEW.num_agencia, NOW()); -- ideal guardar apenas o antigo log, pois já tem o atual guardado em cliente
     END &&
 DELIMITER ;
 
-UPDATE conta SET saldo = 756 WHERE num_conta = '86340-2';
+SET FOREIGN_KEY_CHECKS = 0;
+SET SQL_SAFE_UPDATES = 0;
 
+UPDATE conta SET num_conta = '75839-6' WHERE num_conta = '86340-2';
+UPDATE conta SET saldo = 756 WHERE num_conta = '75839-6';
+UPDATE conta SET tipo_conta = 3 WHERE num_conta = '75839-6';
+UPDATE conta SET num_agencia = 562 WHERE num_conta = '75839-6';
+
+SET FOREIGN_KEY_CHECKS = 1;
+SET SQL_SAFE_UPDATES = 1;
+
+SELECT * FROM agencia;
 SELECT * FROM conta;
 SELECT * FROM log_update_conta;
 
@@ -170,17 +181,6 @@ SELECT * FROM historico;
 SELECT * FROM conta;
 SELECT * FROM agencia;
 SELECT * FROM banco;
-
-SELECT c.nome, b.nome, a.endereco, cc.num_conta
-FROM cliente c
-INNER JOIN historico h
-ON c.cpf = h.cpf_cliente
-INNER JOIN conta cc
-ON h.num_conta_historico = cc.num_conta
-INNER JOIN agencia a
-ON cc.num_agencia = a.numero_agencia
-INNER JOIN banco b
-ON a.cod_banco = b.codigo;
 
 CREATE VIEW dados_cliente
 AS
