@@ -262,8 +262,12 @@ CREATE USER test_user2@localhost IDENTIFIED BY '321';
 
 GRANT papelAdmin
 TO test_user1@localhost;
+SET DEFAULT ROLE papelAdmin -- define como padrão o papel atribuído para que não ocorra erros no momento da sessão ao acessar os privilégios
+TO test_user1@localhost;
 
 GRANT papelDev
+TO test_user2@localhost;
+SET DEFAULT ROLE ALL
 TO test_user2@localhost;
 
 SHOW GRANTS FOR test_user1@localhost;
