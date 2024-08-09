@@ -43,8 +43,8 @@ CREATE TRIGGER trg_hora_extra AFTER INSERT
 ON trabalha
 FOR EACH ROW
 	BEGIN
+		CALL proc_hora_extra(NEW.ID_Func, NEW.NumHoras, @totalHoras);
 		IF @totalhoras > 40.00 THEN
-			CALL proc_hora_extra(NEW.ID_Func, NEW.NumHoras, @totalHoras);
             SET @excedente = @totalHoras - 40;
 			INSERT INTO hora_extra (id_hora_extra, id_func, horas_excedidas) VALUES (NULL, NEW.ID_Func, @excedente);
 		END IF;
@@ -54,8 +54,12 @@ DELIMITER ;
 DROP TRIGGER trg_hora_extra;
 
 INSERT INTO trabalha VALUES (8, 1, 41);
-INSERT INTO trabalha VALUES (8, 2, 2);
-INSERT INTO trabalha VALUES (8, 3, 2);
-INSERT INTO trabalha VALUES (8, 10, 2);
-INSERT INTO trabalha VALUES (8, 20, 11);
-INSERT INTO trabalha VALUES (8, 30, 2);
+
+SELECT SUM(t.NumHoras)
+FROM trabalha t
+WHERE t.ID_Func = 8;
+
+SELECT * FROM trabalha;
+DELETE FROM trabalha WHERE ID_Func = 8 AND ID_Proj = 1;
+SELECT * FROM hora_extra;
+TRUNCATE hora_extra;
