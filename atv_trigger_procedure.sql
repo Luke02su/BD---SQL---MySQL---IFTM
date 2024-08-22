@@ -45,8 +45,8 @@ FOR EACH ROW
 	BEGIN
 		CALL proc_hora_extra(NEW.ID_Func, NEW.NumHoras, @totalHoras);
 		IF @totalhoras > 40.00 THEN
-            SET @excedente = @totalHoras - 40;
-			INSERT INTO hora_extra (id_hora_extra, id_func, horas_excedidas) VALUES (NULL, NEW.ID_Func, @excedente);
+            SET @totalHoras = @totalHoras - 40;
+			INSERT INTO hora_extra (id_hora_extra, id_func, horas_excedidas) VALUES (NULL, NEW.ID_Func, @totalHoras);
 		END IF;
     END%%
 DELIMITER ;
