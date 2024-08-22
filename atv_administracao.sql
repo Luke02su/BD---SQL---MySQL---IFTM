@@ -267,7 +267,7 @@ TO test_user1@localhost;
 
 GRANT papelDev
 TO test_user2@localhost;
-SET DEFAULT ROLE ALL
+SET DEFAULT ROLE papelDev
 TO test_user2@localhost;
 
 SHOW GRANTS FOR test_user1@localhost;
