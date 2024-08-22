@@ -6,7 +6,7 @@ SELECT * FROM funcionario;
 DELIMITER //
 CREATE PROCEDURE proc_taxa_salario_funcionario (IN taxa_salario DOUBLE, IN id_funcionario INT)
 BEGIN
-		UPDATE funcionario SET Salario = Salario * taxa_salario WHERE ID_Func = id_funcionario;
+		UPDATE funcionario SET Salario = (Salario +  (Salario * (taxa_salario / 100.00))) WHERE ID_Func = id_funcionario;
 END//
 DELIMITER ;
 
