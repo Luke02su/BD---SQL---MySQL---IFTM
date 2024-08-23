@@ -74,13 +74,13 @@ CREATE TRIGGER trg_status AFTER INSERT
 ON vendas
 FOR EACH ROW 
 BEGIN
-    DECLARE imovel_valor DOUBLE;
+    DECLARE imovel_valor DOUBLE; 
     
-    SELECT valor INTO imovel_valor
+    SELECT valor INTO imovel_valor -- SET @imovel_valor = 0 -- Seria variável global, pertencendo não somente à TRIGGER.
     FROM imoveis
     WHERE imovelID = NEW.imovelID;
     
-    IF NEW.valor >= imovel_valor THEN
+    IF NEW.valor >= imovel_valor THEN -- @imovel_valor
         UPDATE imoveis 
         SET Status = 'Vendido' 
         WHERE imovelID = NEW.imovelID;
