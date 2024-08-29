@@ -50,20 +50,22 @@ INSERT INTO Vendas (ImovelID, CorretorID, Valor, DataVenda) VALUES
 -- SELECT * FROM vendas;
 
 /*1. Crie uma procedure que gere um relatório com o valor total das comissões de vendas para cada corretor a partir de uma
--- data passada como parâmetro para a procedure. O valor da comissão é de 5% o valor de venda.*/
+data passada como parâmetro para a procedure. O valor da comissão é de 5% o valor de venda.*/
 
 DELIMITER //
 CREATE PROCEDURE proc_gerar_relatorio (IN data_passada DATE)
 BEGIN
-	SELECT v.corretorID, c.nome, v.imovelID, v.valor AS vendaImovel, (v.valor + (v.valor * 0.05)) AS comissaoVenda, v.datavenda
+	SELECT v.corretorID, c.nome, SUM(v.valor * 0.05) AS comissaoTotal, v.datavenda
     FROM vendas v
     INNER JOIN corretores c
     ON c.corretorID = v.corretorID
-    WHERE datavenda = data_passada;
+    WHERE v.DataVenda >= data_passada
+    GROUP BY v.corretorID, c.nome, v.dataVenda
+    ORDER BY data_passada;
 END//
 DELIMITER ;
 
--- CALL proc_gerar_relatorio('2024-07-10');
+CALL proc_gerar_relatorio('2024-07-25');
 
 /*Crie um trigger que ajuste automaticamente o status de um imóvel para "Vendido" ou para “Reservado” na tabela de
 imóveis, quando uma venda é registrada na tabela de transações. O imóvel será “reservado” quando o valor inserido na
@@ -115,3 +117,4 @@ TO 'secretaria'@'%';
 -- SHOW GRANTS FOR 'secretaria'@'%';
 
 -- DROP SCHEMA imobiliaria;
+-- DROP USER 'secretaria'@'%';
